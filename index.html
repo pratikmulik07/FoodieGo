@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FoodieGo - Online Food Ordering System (OFDS) demo built with vanilla HTML, CSS and JavaScript using the Factory Method design pattern." />
+  <title>FoodieGo | Online Food Ordering System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body id="top">
+
+  <!-- ============================= HEADER ============================= -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">&#127860;</span>
+        <span class="brand-text">FoodieGo <span class="brand-tag">OFDS</span></span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mainNav">&#9776;</button>
+
+      <nav id="mainNav" class="main-nav" aria-label="Primary">
+        <a href="#menu">Menu</a>
+        <a href="#cart-section">Cart</a>
+        <a href="#orders">Order History</a>
+        <a href="#architecture">Architecture</a>
+      </nav>
+
+      <div class="header-actions">
+        <a id="cartCountBadge" class="cart-badge" href="#cart-section" aria-live="polite" aria-label="View cart">Cart (0)</a>
+        <button id="authBtn" class="btn btn-outline btn-sm" type="button">Login</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================= HERO ============================= -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="hero-kicker">Hot &middot; Fresh &middot; Fast</p>
+          <h1>Delicious food, delivered to your door.</h1>
+          <p class="hero-sub">Order pizzas, burgers, Indian classics and more. Choose <strong>Home Delivery</strong> or <strong>Self Pickup</strong> &mdash; your order, your way.</p>
+          <div class="hero-cta">
+            <a href="#menu" class="btn btn-primary">Browse Menu</a>
+            <a href="#cart-section" class="btn btn-ghost">Go to Cart</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="hero-plate">
+            <span class="hero-emoji hero-emoji-1">&#127829;</span>
+            <span class="hero-emoji hero-emoji-2">&#127828;</span>
+            <span class="hero-emoji hero-emoji-3">&#127837;</span>
+            <span class="hero-emoji hero-emoji-4">&#127849;</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= MENU ============================= -->
+    <section id="menu" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Our Menu</h2>
+          <p class="section-sub">Search by name or filter by category.</p>
+        </div>
+
+        <div class="menu-toolbar">
+          <div class="search-box">
+            <label for="searchInput" class="visually-hidden">Search food by name</label>
+            <input id="searchInput" type="search" placeholder="Search by food name&hellip;" autocomplete="off" />
+          </div>
+          <div id="categoryFilters" class="category-filters" role="group" aria-label="Filter menu by category"></div>
+        </div>
+
+        <p id="menuStatus" class="status-msg" aria-live="polite"></p>
+        <div id="foodGrid" class="food-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============================= CART + CHECKOUT ============================= -->
+    <section id="cart-section" class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <h2>Cart &amp; Checkout</h2>
+          <p class="section-sub">Review your items, pick an order type and place your order.</p>
+        </div>
+
+        <div class="cart-layout">
+
+          <!-- Cart panel -->
+          <div class="panel cart-panel">
+            <h3>Your Cart</h3>
+            <p id="cartEmptyMsg" class="empty-msg">Your cart is empty. Add some delicious items from the menu above.</p>
+            <ul id="cartItems" class="cart-items" aria-live="polite"></ul>
+          </div>
+
+          <!-- Checkout panel: exactly one checkout form -->
+          <div class="panel checkout-panel">
+            <h3>Checkout</h3>
+            <form id="checkoutForm" novalidate>
+
+              <div class="field">
+                <label for="coName">Customer Name</label>
+                <input id="coName" name="customerName" type="text" autocomplete="name" placeholder="e.g. Rahul Sharma" />
+              </div>
+
+              <div class="field">
+                <label for="coPhone">Phone Number</label>
+                <input id="coPhone" name="customerPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10-digit phone number" />
+              </div>
+
+              <!-- Order Type dropdown (before the address field) -->
+              <div class="field" id="checkoutOrderTypeField">
+                <label for="coOrderType">Order Type</label>
+                <select id="coOrderType" name="orderType" required>
+                  <option value="delivery">Home Delivery</option>
+                  <option value="takeaway">Self Pickup</option>
+                </select>
+              </div>
+
+              <!-- Delivery address: visible only for Home Delivery -->
+              <div id="checkoutAddressField" class="field">
+                <label for="coAddress">Delivery Address</label>
+                <textarea id="coAddress" name="deliveryAddress" rows="3" placeholder="House / flat, street, landmark, city, PIN"></textarea>
+              </div>
+
+              <div class="order-summary" aria-label="Order summary">
+                <h4>Order Summary</h4>
+                <div class="summary-row">
+                  <span>Subtotal</span>
+                  <span id="sumSubtotal">&#8377;0</span>
+                </div>
+                <div class="summary-row">
+                  <span>Delivery Fee</span>
+                  <span id="sumDeliveryFee">&#8377;0</span>
+                </div>
+                <div class="summary-row summary-total">
+                  <span>Grand Total</span>
+                  <span id="sumGrandTotal">&#8377;0</span>
+                </div>
+                <p id="feeHint" class="fee-hint"></p>
+              </div>
+
+              <p id="checkoutFeedback" class="feedback" role="status" aria-live="polite"></p>
+
+              <button id="placeOrderBtn" class="btn btn-primary btn-block" type="submit">Place Order</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= CONFIRMATION ============================= -->
+    <section id="confirmation" class="section" hidden>
+      <div class="container narrow">
+        <div class="panel confirm-panel">
+          <div class="confirm-icon" aria-hidden="true">&#9989;</div>
+          <h2>Order Confirmed!</h2>
+          <p class="section-sub">Thank you! Your order has been placed successfully.</p>
+          <div id="confirmationDetails" class="confirm-details"></div>
+          <button id="newOrderBtn" class="btn btn-primary" type="button">Order More</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= ORDER HISTORY ============================= -->
+    <section id="orders" class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <h2>Order History</h2>
+          <p class="section-sub">All your previous orders are saved on this device.</p>
+        </div>
+        <p id="orderHistoryEmpty" class="empty-msg">No orders yet. Your placed orders will appear here.</p>
+        <div id="orderHistoryList" class="order-history"></div>
+      </div>
+    </section>
+
+    <!-- ============================= ARCHITECTURE NOTE ============================= -->
+    <section id="architecture" class="section">
+      <div class="container narrow">
+        <div class="panel arch-panel">
+          <h2>Built with the Factory Method Pattern</h2>
+          <p>Checkout asks <code>getOrderCreator(orderType)</code> for the right creator. <code>DeliveryOrderCreator</code> produces delivery orders (address required, &#8377;40 fee below &#8377;499, free at &#8377;499+), while <code>TakeawayOrderCreator</code> produces self-pickup orders (no address, &#8377;0 fee). The checkout code depends only on the base <code>OrderCreator</code>, so order types can be added without touching the checkout logic.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================= FOOTER ============================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><strong>FoodieGo OFDS</strong> &mdash; Software Design Patterns (FA2) demo project.</p>
+      <p>Demo application only. No real payments are processed. &copy; 2026.</p>
+    </div>
+  </footer>
+
+  <!-- ============================= LOGIN MODAL ============================= -->
+  <div id="loginModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+      <button id="loginModalClose" class="modal-close" type="button" aria-label="Close login dialog">&times;</button>
+      <h3 id="loginModalTitle">Demo Customer Login</h3>
+      <p class="modal-sub">This is a demo session only &mdash; no password is required or stored.</p>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="loginName">Your Name</label>
+          <input id="loginName" type="text" autocomplete="name" placeholder="e.g. Priya Verma" />
+        </div>
+        <div class="field">
+          <label for="loginPhone">Phone Number</label>
+          <input id="loginPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10-digit phone number" />
+        </div>
+        <p id="loginFeedback" class="feedback" role="status" aria-live="polite"></p>
+        <button class="btn btn-primary btn-block" type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
